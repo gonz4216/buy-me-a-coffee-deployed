@@ -5,8 +5,13 @@ import React, { useEffect, useState } from "react";
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+
+    const noTextErr = "Please add name / message to send a coffee!"
+
+    const [loading, setLoading] = useState(false)
+
   // Contract Address & ABI
-  const contractAddress = "0xDBa03676a2fBb6711CB652beF5B7416A53c1421D";
+  const contractAddress = "0xD2740d68dD36E5A7818bB7adBe22800dfe0C57Ef";
   const contractABI = abi.abi;
 
   // Component state
@@ -20,6 +25,7 @@ export default function Home() {
   }
 
   const onMessageChange = (event) => {
+     
     setMessage(event.target.value);
   }
 
@@ -72,7 +78,7 @@ export default function Home() {
           contractABI,
           signer
         );
-
+          setLoading(true)
         console.log("buying coffee..")
         const coffeeTxn = await buyMeACoffee.buyCoffee(
           name ? name : "anon",
@@ -81,7 +87,7 @@ export default function Home() {
         );
 
         await coffeeTxn.wait();
-
+        setLoading(false)
         console.log("mined ", coffeeTxn.hash);
 
         console.log("coffee purchased!");
@@ -166,50 +172,50 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Buy Albert a Coffee!</title>
+        <title>Buy Ethan a Coffee!</title>
         <meta name="description" content="Tipping site" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Buy Albert a Coffee!
+          Buy Ethan a Coffee!
         </h1>
         
         {currentAccount ? (
           <div>
             <form>
-              <div class="formgroup">
-                <label>
-                  Name
-                </label>
+              <div className="formgroup">
+                
                 <br/>
                 
                 <input
                   id="name"
                   type="text"
-                  placeholder="anon"
+                  placeholder="Name"
                   onChange={onNameChange}
+                  className='input--name'
                   />
               </div>
               <br/>
-              <div class="formgroup">
-                <label>
-                  Send Albert a message
-                </label>
+              <div className="formgroup">
+                 
                 <br/>
 
                 <textarea
                   rows={3}
-                  placeholder="Enjoy your coffee!"
+                  placeholder="Message!"
                   id="message"
                   onChange={onMessageChange}
+                  className='input--name'
                   required
                 >
                 </textarea>
+              {message === "" && <p>{noTextErr}</p>}
               </div>
               <div>
-                <button
+                <button disabled={message == ""}
+                className='button-85'
                   type="button"
                   onClick={buyCoffee}
                 >
@@ -219,29 +225,33 @@ export default function Home() {
             </form>
           </div>
         ) : (
-          <button onClick={connectWallet}> Connect your wallet </button>
+          <button onClick={connectWallet}  className="button-85"><img className='button--img' src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png" alt="" /></button>
         )}
       </main>
-
+          {loading && <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>}
       {currentAccount && (<h1>Memos received</h1>)}
 
       {currentAccount && (memos.map((memo, idx) => {
         return (
-          <div key={idx} style={{border:"2px solid", "border-radius":"5px", padding: "5px", margin: "5px"}}>
-            <p style={{"font-weight":"bold"}}>"{memo.message}"</p>
+          <div key={idx} style={{border:"2px solid", "borderRadius":"5px", padding: "5px", margin: "5px"}}>
+            <p style={{"fontWeight":"bold"}}>"{memo.message}"</p>
             <p>From: {memo.name} at {memo.timestamp.toString()}</p>
           </div>
         )
       }))}
 
       <footer className={styles.footer}>
+        <div className="footer--wrapper">
+
+        <img className='twitter' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/2491px-Twitter-logo.svg.png" alt="" />
         <a
-          href="https://alchemy.com/?a=roadtoweb3weektwo"
+          href="https://twitter.com/ethgnz"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Created by @thatguyintech for Alchemy's Road to Web3 lesson two!
+         @ethgnz - Web3Wizard 🧙🏽‍♀️
         </a>
+        </div>
       </footer>
     </div>
   )
